@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - News Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #fceabb, #f8b500);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        
+        .login-box {
+            background: #fff;
+            padding: 35px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            width: 380px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .login-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        
+        h2 {
+            margin-bottom: 25px;
+            color: #5b2c6f;
+            font-weight: 600;
+        }
+
+        
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input:focus {
+            border-color: #e67e22;
+            box-shadow: 0 0 8px rgba(230, 126, 34, 0.3);
+        }
+
+        
+        button {
+            background: #e67e22;
+            color: white;
+            padding: 12px 0;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 95%;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        button:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+
+        
+        .error {
+            color: #c0392b;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        /* Small Text */
+        .login-box p {
+            font-size: 14px;
+            color: #888;
+            margin-top: 15px;
+        }
+        .login-box p a {
+            color: #e67e22;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-box p a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Welcome Back!</h2>
+        <input type="text" id="username" placeholder="Enter Username">
+        <input type="password" id="password" placeholder="Enter Password">
+        <button onclick="login()">Login</button>
+        <p id="error-msg" class="error"></p>
+        <p>Don't have an account? <a href="index.html">Sign up</a></p>
+    </div>
+
+    <script>
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Login failed");
+                }
+
+                const data = await response.json();
+				
+				
+				if (data.username !== username) {
+				                document.getElementById("error-msg").innerText = "⚠️ Invalid username or password";
+				                return;
+				            }
+				
+				
+                localStorage.setItem("token", data.token); 
+				
+				localStorage.setItem("username", username);
+
+                alert("✅ Login successful!");
+                window.location.href = "news.html"; 
+
+            } catch (error) {
+                document.getElementById("error-msg").innerText = " Invalid username or password";
+            }
+        }
+    </script>
+</body>
+</html>

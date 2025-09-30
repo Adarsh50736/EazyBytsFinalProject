@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signup - News Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fff4e6, #ffe0b2);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .signup-box {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      width: 380px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .signup-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-size: 28px;
+      font-weight: 600;
+      color: #e67e22;
+    }
+
+    .input-box {
+      margin: 12px 0;
+      position: relative;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      outline: none;
+      font-size: 15px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background: #fafafa;
+    }
+
+    input:focus {
+      border-color: #e67e22;
+      background: #fff;
+      box-shadow: 0 0 8px rgba(230, 126, 34, 0.3);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #e67e22, #d35400);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, #f39c12, #e67e22);
+    }
+
+    .error {
+      color: #c0392b;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .success {
+      color: #27ae60;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      font-size: 14px;
+      color: #e67e22;
+      transition: 0.3s;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: #d35400;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-box">
+    <h2>Create Account</h2>
+
+    <div class="input-box">
+      <input type="text" id="username" placeholder="Enter Username">
+    </div>
+    <div class="input-box">
+      <input type="email" id="email" placeholder="Enter Email">
+    </div>
+    <div class="input-box">
+      <input type="password" id="password" placeholder="Enter Password">
+    </div>
+    <div class="input-box">
+      <input type="text" id="role" placeholder="Enter Role (e.g. USER)">
+    </div>
+
+    <button onclick="signup()">Signup</button>
+    <p id="msg"></p>
+
+    <a href="login.html">Already have an account? Login here</a>
+  </div>
+
+  <script>
+    async function signup() {
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const role = document.getElementById("role").value.trim();
+      const msg = document.getElementById("msg");
+
+      if (!username || !password || !role || !email) {
+        msg.innerHTML = "<span class='error'>⚠️ All fields are required!</span>";
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email, password, role })
+        });
+
+        if (!response.ok) throw new Error("Signup failed");
+
+        msg.innerHTML = "<span class='success'>✅ Signup successful! Redirecting...</span>";
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+      } catch (error) {
+        msg.innerHTML = "<span class='error'>⚠️ Signup failed. Try again.</span>";
+      }
+    }
+  </script>
+</body>
+</html>

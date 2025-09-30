@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary: #e67e22;
+        --primary-dark: #d35400;
+        --primary-light: #f39c12;
+        --bg-light: linear-gradient(135deg, #fff4e6, #ffe0b2);
+        --bg-dark: linear-gradient(135deg, #1a1a2e, #16213e);
+        --card-light: #ffffff;
+        --card-dark: #2d3748;
+        --text-light: #333333;
+        --text-dark: #f7fafc;
+        --shadow-light: rgba(0, 0, 0, 0.1);
+        --shadow-dark: rgba(0, 0, 0, 0.3);
+        --header-light: #e67e22;
+        --header-dark: #2d3748;
+    }
+
+    .dark-mode {
+        --bg: var(--bg-dark);
+        --card: var(--card-dark);
+        --text: var(--text-dark);
+        --shadow: var(--shadow-dark);
+        --header: var(--header-dark);
+    }
+
+    .light-mode {
+        --bg: var(--bg-light);
+        --card: var(--card-light);
+        --text: var(--text-light);
+        --shadow: var(--shadow-light);
+        --header: var(--header-light);
+    }
+
+    * { 
+        box-sizing: border-box; 
+        margin: 0; 
+        padding: 0; 
+        font-family: 'Montserrat', sans-serif; 
+        transition: background-color 0.5s ease, color 0.3s ease;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        transition: background 0.5s ease;
+    }
+
+    
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 40px;
+        background: var(--header);
+        color: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        box-shadow: 0 4px 15px var(--shadow);
+        animation: slideDown 0.8s ease-out;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    header h1 {
+        font-size: 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .user-circle {
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        color: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 18px;
+        box-shadow: 0 2px 6px var(--shadow);
+        transition: transform 0.3s ease;
+    }
+
+    .user-circle:hover {
+        transform: scale(1.1);
+    }
+
+    #logout-btn {
+        margin-left: 15px;
+        background: #c0392b;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    #logout-btn:hover {
+        background: #922b21;
+        transform: translateY(-2px);
+    }
+
+    
+    .theme-toggle {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px var(--shadow);
+        z-index: 100;
+        transition: all 0.3s ease;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .theme-toggle:hover {
+        transform: scale(1.1);
+        animation-play-state: paused;
+    }
+
+    
+    #news-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 30px;
+        padding: 30px 40px;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    
+    .news-card {
+        background: var(--card);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px var(--shadow);
+        transition: all 0.4s ease;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        animation: cardAppear 0.6s ease-out;
+        animation-fill-mode: both;
+    }
+
+    @keyframes cardAppear {
+        from { 
+            opacity: 0; 
+            transform: translateY(20px) scale(0.95); 
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
+        }
+    }
+
+    .news-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 15px 30px var(--shadow);
+    }
+
+    .card-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .news-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .news-card:hover img {
+        transform: scale(1.1);
+    }
+
+    .card-category {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: var(--primary);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .card-content {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    .news-card h3 {
+        font-size: 18px;
+        color: var(--primary);
+        margin-bottom: 12px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .news-card p {
+        font-size: 14px;
+        color: var(--text);
+        line-height: 1.5;
+        opacity: 0.9;
+        margin-bottom: 15px;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 15px;
+        border-top: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .news-date {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        color: var(--text);
+        opacity: 0.7;
+    }
+
+    .news-card a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        padding: 8px 16px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .news-card a:hover {
+        background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-btn {
+        background: transparent;
+        border: none;
+        color: var(--text);
+        opacity: 0.7;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .action-btn:hover {
+        color: var(--primary);
+        opacity: 1;
+    }
+
+    
+    .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        grid-column: 1 / -1;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid rgba(230, 126, 34, 0.2);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    
+    .search-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px 40px 0;
+        animation: slideIn 0.8s ease-out;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .search-bar {
+        width: 100%;
+        max-width: 500px;
+        display: flex;
+        background: var(--card);
+        border-radius: 50px;
+        padding: 10px 20px;
+        box-shadow: 0 4px 15px var(--shadow);
+    }
+
+    .search-bar input {
+        flex: 1;
+        border: none;
+        background: transparent;
+        color: var(--text);
+        font-size: 16px;
+        outline: none;
+    }
+
+    .search-bar button {
+        background: transparent;
+        border: none;
+        color: var(--primary);
+        cursor: pointer;
+        font-size: 18px;
+        transition: transform 0.3s ease;
+    }
+
+    .search-bar button:hover {
+        transform: scale(1.1);
+    }
+
+    
+    @media (max-width: 768px) {
+        header { 
+            flex-direction: column; 
+            gap: 12px; 
+            text-align: center; 
+            padding: 15px 20px;
+        }
+        .user-info { 
+            justify-content: center; 
+            flex-wrap: wrap;
+        }
+        #news-container { 
+            padding: 20px; 
+            grid-template-columns: 1fr;
+        }
+        .search-container {
+            padding: 15px 20px 0;
+        }
+    }
+
+    @media (max-width: 480px) {
+        header h1 {
+            font-size: 22px;
+        }
+        .theme-toggle {
+            width: 50px;
+            height: 50px;
+            bottom: 20px;
+            right: 20px;
+        }
+        .card-actions {
+            flex-direction: column;
+            gap: 5px;
+        }
+    }
+</style>
+</head>
+<body class="light-mode">
+
+<header>
+    <h1><i class="fas fa-newspaper"></i> News Portal</h1>
+    <div class="user-info">
+        <div class="user-circle" id="user-circle">U</div>
+        <span id="welcome-msg">Welcome, User</span>
+        <button id="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+</header>
+
+<div class="search-container">
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search for news...">
+        <button id="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+</div>
+
+<main>
+    <div id="news-container">
+        <div class="loading">
+            <div class="spinner"></div>
+        </div>
+    </div>
+</main>
+
+<div class="theme-toggle" id="theme-toggle">
+    <i class="fas fa-moon"></i>
+</div>
+
+<script>
+    
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("⚠️ Please login first!");
+        window.location.href = "login.html";
+    }
+
+    
+    const username = localStorage.getItem("username") || "User";
+    document.getElementById("welcome-msg").innerText = `Welcome, ${username}`;
+    document.getElementById("user-circle").innerText = username.charAt(0).toUpperCase();
+
+    
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+    
+    
+    const savedTheme = localStorage.getItem('theme') || 'light-mode';
+    body.classList.add(savedTheme);
+    updateThemeIcon(savedTheme);
+    
+    themeToggle.addEventListener('click', () => {
+        if (body.classList.contains('light-mode')) {
+            body.classList.replace('light-mode', 'dark-mode');
+            localStorage.setItem('theme', 'dark-mode');
+            updateThemeIcon('dark-mode');
+        } else {
+            body.classList.replace('dark-mode', 'light-mode');
+            localStorage.setItem('theme', 'light-mode');
+            updateThemeIcon('light-mode');
+        }
+    });
+    
+    function updateThemeIcon(theme) {
+        const icon = themeToggle.querySelector('i');
+        if (theme === 'dark-mode') {
+            icon.className = 'fas fa-sun';
+        } else {
+            icon.className = 'fas fa-moon';
+        }
+    }
+
+    
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    
+    searchBtn.addEventListener('click', performSearch);
+    searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
+    });
+    
+    function performSearch() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        if (searchTerm) {
+            const cards = document.querySelectorAll('.news-card');
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                    card.style.animation = 'cardAppear 0.5s ease-out';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        } else {
+            
+            const cards = document.querySelectorAll('.news-card');
+            cards.forEach(card => {
+                card.style.display = 'flex';
+                card.style.animation = 'cardAppear 0.5s ease-out';
+            });
+        }
+    }
+
+    
+    async function fetchNews() {
+        try {
+            
+            document.getElementById('news-container').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            `;
+
+            const response = await fetch("/api/news", {
+                headers: { "Authorization": "Bearer " + token }
+            });
+
+            if (response.status === 401) {
+                alert("Session expired! Please login again.");
+                localStorage.removeItem("token");
+                window.location.href = "login.html";
+                return;
+            }
+
+            if (!response.ok) throw new Error("Failed to fetch news");
+
+            const newsList = await response.json();
+            const container = document.getElementById("news-container");
+            container.innerHTML = "";
+
+            
+            newsList.forEach((news, index) => {
+                const card = document.createElement("div");
+                card.classList.add("news-card");
+                card.style.animationDelay = `${index * 0.1}s`;
+                
+                
+                const date = news.publishedAt ? new Date(news.publishedAt) : new Date();
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                
+                const category = news.source?.name || "General";
+                
+                card.innerHTML = `
+                    <div class="card-image">
+                        <img src="${news.urlToImage || '/images/no-image.jpg'}" 
+                             alt="News Image" onerror="this.src='/images/no-image.jpg';">
+                        <div class="card-category">${category}</div>
+                    </div>
+                    <div class="card-content">
+                        <h3>${news.title || "Untitled News"}</h3>
+                        <p>${news.description && news.description.trim() !== "" 
+                            ? news.description 
+                            : "No description available. Click below to read full article."}</p>
+                        <div class="card-footer">
+                            <div class="news-date">
+                                <i class="far fa-calendar-alt"></i>
+                                <span>${formattedDate}</span>
+                            </div>
+                            <div class="card-actions">
+                                <button class="action-btn" onclick="shareNews('${news.url}')">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="action-btn" onclick="bookmarkNews('${news.title}', '${news.url}')">
+                                    <i class="far fa-bookmark"></i>
+                                </button>
+                                <a href="${news.url}" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i> Read More
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error("Error fetching news:", error);
+            document.getElementById("news-container").innerHTML = `
+                <div style="text-align: center; padding: 40px; grid-column: 1 / -1;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: var(--primary); margin-bottom: 15px;"></i>
+                    <h3>⚠️ Failed to load news</h3>
+                    <p>Please check your connection and try again.</p>
+                </div>
+            `;
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+    }
+
+    
+    function shareNews(url) {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Check out this news article',
+                url: url
+            })
+            .catch(console.error);
+        } else {
+            
+            navigator.clipboard.writeText(url)
+                .then(() => alert('Link copied to clipboard!'))
+                .catch(() => {
+                    
+                    const textArea = document.createElement('textarea');
+                    textArea.value = url;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    alert('Link copied to clipboard!');
+                });
+        }
+    }
+
+    function bookmarkNews(title, url) {
+        let bookmarks = JSON.parse(localStorage.getItem('newsBookmarks')) || [];
+        
+        const existingIndex = bookmarks.findIndex(bookmark => bookmark.url === url);
+        
+        if (existingIndex === -1) {
+            
+            bookmarks.push({ title, url, date: new Date().toISOString() });
+            localStorage.setItem('newsBookmarks', JSON.stringify(bookmarks));
+            alert('News bookmarked!');
+        } else {
+            
+            bookmarks.splice(existingIndex, 1);
+            localStorage.setItem('newsBookmarks', JSON.stringify(bookmarks));
+            alert('Bookmark removed!');
+        }
+    }
+
+    
+    fetchNews();
+</script>
+
+</body>
+</html>
